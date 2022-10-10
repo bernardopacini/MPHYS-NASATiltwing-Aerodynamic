@@ -20,6 +20,11 @@ if args.task == "runPrimal":
 else:
     useColoring = True
 
+# TEMPORARY PYGEO
+childFFD = "./FFD/childFFD.xyz"
+parentFFD = "./FFD/parentFFD.xyz"
+# DVGeoChild = DVGeometry(childFFD, child=True)
+
 # =============================================================================
 # Flight Condition
 # =============================================================================
@@ -124,7 +129,7 @@ class Top(Multipoint):
         self.add_subsystem("mesh", dafoam_builder.get_mesh_coordinate_subsystem())
 
         # Add Geometry Component
-        self.add_subsystem("geometry", OM_DVGEOCOMP(ffd_file="FFD/wingFFD.xyz"))
+        self.add_subsystem("geometry", OM_DVGEOCOMP(file=childFFD, type="ffd"))
 
         # Add Scenario
         self.mphys_add_scenario("cruise", ScenarioAerodynamic(aero_builder=dafoam_builder))
