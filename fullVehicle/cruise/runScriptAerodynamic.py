@@ -23,8 +23,6 @@ else:
 # TEMPORARY PYGEO
 childFFD = "./FFD/childFFD.xyz"
 parentFFD = "./FFD/parentFFD.xyz"
-# DVGeoChild = DVGeometry(childFFD, child=True)
-
 # =============================================================================
 # Flight Condition
 # =============================================================================
@@ -32,7 +30,7 @@ U0 = 79.74
 p0 = 69692.1456
 nuTilda0 = 4.5e-5
 T0 = 268.35
-alpha0 = 0.00
+alpha0 = 0.0
 A0 = 5.7915
 rho0 = p0/287.0/T0  # density for normalizing CD and CL
 
@@ -41,7 +39,7 @@ CL_target = 0.67
 daOptions = {
     "designSurfaces": ["wing"],
     "solverName": "DARhoSimpleFoam",
-    "primalMinResTol": 1.0e-10,
+    "primalMinResTol": 1.0e-9,
     "primalMinResTolDiff": 1.0e4,
     "debug": False,
     "primalBC": {
@@ -62,6 +60,56 @@ daOptions = {
         "rhoMax": 5.0,
         "rhoMin": 0.2,
     },
+    # "fvSource": {
+    #     "disk1": {
+    #         "type": "actuatorDisk",
+    #         "source": "cylinderAnnulusSmooth",
+    #         "center": [3.1364, 6.6626, 2.5908],
+    #         "direction": [1.0, 0.0, 0.0],
+    #         "innerRadius": 0.1,
+    #         "outerRadius": 1.1097,
+    #         "rotDir": "left",
+    #         "scale": 1.0,
+    #         "POD": 0.0,
+    #         "eps": 0.05,
+    #         "expM": 1.0,
+    #         "expN": 0.5,
+    #         "adjustThrust": 1,
+    #         "targetThrust": 2000.0,
+    #     },
+    #     "disk2": {
+    #         "type": "actuatorDisk",
+    #         "source": "cylinderAnnulusSmooth",
+    #         "center": [2.7209, 4.4574, 2.4808],
+    #         "direction": [1.0, 0.0, 0.0],
+    #         "innerRadius": 0.1,
+    #         "outerRadius": 1.1097,
+    #         "rotDir": "left",
+    #         "scale": 1.0,
+    #         "POD": 0.0,
+    #         "eps": 0.05,
+    #         "expM": 1.0,
+    #         "expN": 0.5,
+    #         "adjustThrust": 1,
+    #         "targetThrust": 2000.0,
+    #     },
+    #     "disk3": {
+    #         "type": "actuatorDisk",
+    #         "source": "cylinderAnnulusSmooth",
+    #         "center": [2.3067, 2.2586, 2.4808],
+    #         "direction": [1.0, 0.0, 0.0],
+    #         "innerRadius": 0.1,
+    #         "outerRadius": 1.1097,
+    #         "rotDir": "left",
+    #         "scale": 1.0,
+    #         "POD": 0.0,
+    #         "eps": 0.05,
+    #         "expM": 1.0,
+    #         "expN": 0.5,
+    #         "adjustThrust": 1,
+    #         "targetThrust": 2000.0,
+    #     },
+    # },
     "objFunc": {
         "CD": {
             "part1": {
@@ -96,12 +144,13 @@ daOptions = {
     "designVar": {
         "twist": {"designVarType": "FFD"},
         "shape": {"designVarType": "FFD"},
+        # "actuator_disk1": {"designVarType": "ACTD", "actuatorName": "disk1"},
+        # "actuator_disk2": {"designVarType": "ACTD", "actuatorName": "disk2"},
     },
     "checkMeshThreshold": {
         "maxNonOrth": 90.0,
     },
 }
-
 
 class Top(Multipoint):
     def setup(self):
@@ -129,7 +178,7 @@ class Top(Multipoint):
         self.add_subsystem("mesh", dafoam_builder.get_mesh_coordinate_subsystem())
 
         # Add Geometry Component
-        self.add_subsystem("geometry", OM_DVGEOCOMP(file=childFFD, type="ffd"))
+        self.add_subsystem("geometry", OM_DVGEOCOMP(file=parentFFD, type="ffd"))
 
         # Add Scenario
         self.mphys_add_scenario("cruise", ScenarioAerodynamic(aero_builder=dafoam_builder))
@@ -153,7 +202,8 @@ class Top(Multipoint):
         self.geometry.nom_setConstraintSurface(tri_points)
 
         # Create Reference Axis
-        nRefAxPts = self.geometry.nom_addRefAxis(name="wingAxis", xFraction=0.25, alignIndex="j")
+        self.geometry.nom_addChild(ffd_file=childFFD)
+        nRefAxPts = self.geometry.nom_addRefAxis(name="wingAxis", xFraction=0.25, alignIndex="j", childIdx=0)
 
         # Define Twist Design Variable
         def twist(val, geo):
@@ -161,16 +211,16 @@ class Top(Multipoint):
                 geo.rot_y["wingAxis"].coef[i] = val[i]
 
         # Add DVs
-        self.geometry.nom_addGeoDVGlobal(dvName="twist", value=np.array([0] * (nRefAxPts)), func=twist)
-        nShapes = self.geometry.nom_addGeoDVLocal(dvName="shape", axis="z")
+        self.geometry.nom_addGlobalDV(dvName="twist", value=np.array([0] * (nRefAxPts)), func=twist, childIdx=0)
+        nShapes = self.geometry.nom_addLocalDV(dvName="shape", axis="z", childIdx=0)
         
         # Set up constraints
         leList = [[2.72, 0.01, 2.59], [3.96, 6.61, 2.59]]
         teList = [[3.71, 0.01, 2.59], [4.65, 6.61, 2.59]]
         self.geometry.nom_addThicknessConstraints2D("thickcon", leList, teList, nSpan=16, nChord=20)
         self.geometry.nom_addVolumeConstraint("volcon", leList, teList, nSpan=16, nChord=20)
-        self.geometry.nom_add_LETEConstraint("lecon", 0, "iLow")
-        self.geometry.nom_add_LETEConstraint("tecon", 0, "iHigh")
+        self.geometry.nom_add_LETEConstraint("lecon", 0, "iLow", childIdx=0)
+        self.geometry.nom_add_LETEConstraint("tecon", 0, "iHigh", childIdx=0)
 
         # Add and Connect DVs on the Indepent Variable Component
         self.dvs.add_output("twist", val=np.array([alpha0] * (nRefAxPts)))
