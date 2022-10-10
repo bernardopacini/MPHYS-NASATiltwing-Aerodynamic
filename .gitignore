@@ -1,5 +1,41 @@
+# Case Files
+*processor*/
+*0/
+*{1...9}*
+
+# Coloring Files
+*.bin
+*.bin.info
+
+# Geometry Files
+*.xyz
+*.stl
+*.igs
+*.cgns
+*.tin
+*.prj
+*.bdf
+*.f5
+*.dcel
+
+# Mesh Files
+**/constant/triSurface/*
+**/constant/polyMesh/*
+**/constant/extendedFeatureEdgeMesh/*
+
 # Sphinx Documentation Files
 *doc/build/*
 *doc/source/_build/*
 *doc/source/_static/*
 *doc/source/_templates/*
+
+# Data Files
+*inputData/*
+!inputData/getData.sh
+
+# Misc Files
+*.txt
+*.hst
+*.html
+*.csv
+*.mp4

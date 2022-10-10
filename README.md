@@ -1,5 +1,5 @@
-Research Project Template
-=========================
+NASA Tiltwing Vehicle - Aerodynamic Optimization
+================================================
 
 This template provides a starting point for computational research projects.
 The aim of this template is to provide a standardized way of working on a project and documenting the work that makes it easily reproducible in the future.
