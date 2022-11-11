@@ -32,7 +32,7 @@ nuTilda0 = 4.5e-5
 T0 = 268.35
 alpha0 = 0.0
 A0 = 5.7915
-rho0 = p0/287.0/T0  # density for normalizing CD and CL
+rho0 = p0/287.0/T0
 
 CL_target = 0.67
 
@@ -60,56 +60,56 @@ daOptions = {
         "rhoMax": 5.0,
         "rhoMin": 0.2,
     },
-    # "fvSource": {
-    #     "disk1": {
-    #         "type": "actuatorDisk",
-    #         "source": "cylinderAnnulusSmooth",
-    #         "center": [3.1364, 6.6626, 2.5908],
-    #         "direction": [1.0, 0.0, 0.0],
-    #         "innerRadius": 0.1,
-    #         "outerRadius": 1.1097,
-    #         "rotDir": "left",
-    #         "scale": 1.0,
-    #         "POD": 0.0,
-    #         "eps": 0.05,
-    #         "expM": 1.0,
-    #         "expN": 0.5,
-    #         "adjustThrust": 1,
-    #         "targetThrust": 2000.0,
-    #     },
-    #     "disk2": {
-    #         "type": "actuatorDisk",
-    #         "source": "cylinderAnnulusSmooth",
-    #         "center": [2.7209, 4.4574, 2.4808],
-    #         "direction": [1.0, 0.0, 0.0],
-    #         "innerRadius": 0.1,
-    #         "outerRadius": 1.1097,
-    #         "rotDir": "left",
-    #         "scale": 1.0,
-    #         "POD": 0.0,
-    #         "eps": 0.05,
-    #         "expM": 1.0,
-    #         "expN": 0.5,
-    #         "adjustThrust": 1,
-    #         "targetThrust": 2000.0,
-    #     },
-    #     "disk3": {
-    #         "type": "actuatorDisk",
-    #         "source": "cylinderAnnulusSmooth",
-    #         "center": [2.3067, 2.2586, 2.4808],
-    #         "direction": [1.0, 0.0, 0.0],
-    #         "innerRadius": 0.1,
-    #         "outerRadius": 1.1097,
-    #         "rotDir": "left",
-    #         "scale": 1.0,
-    #         "POD": 0.0,
-    #         "eps": 0.05,
-    #         "expM": 1.0,
-    #         "expN": 0.5,
-    #         "adjustThrust": 1,
-    #         "targetThrust": 2000.0,
-    #     },
-    # },
+    "fvSource": {
+        "disk1": {
+            "type": "actuatorDisk",
+            "source": "cylinderAnnulusSmooth",
+            "center": [3.1364, 6.6626, 2.5908],
+            "direction": [1.0, 0.0, 0.0],
+            "innerRadius": 0.22158,
+            "outerRadius": 1.1079,
+            "rotDir": "left",
+            "scale": 1.0,
+            "POD": 2.74,
+            "eps": 0.15,
+            "expM": 1.0,
+            "expN": 0.5,
+            "adjustThrust": 1,
+            "targetThrust": 347.0897,
+        },
+        "disk2": {
+            "type": "actuatorDisk",
+            "source": "cylinderAnnulusSmooth",
+            "center": [2.7209, 4.4574, 2.4808],
+            "direction": [1.0, 0.0, 0.0],
+            "innerRadius": 0.22158,
+            "outerRadius": 1.1079,
+            "rotDir": "left",
+            "scale": 1.0,
+            "POD": 2.74,
+            "eps": 0.15,
+            "expM": 1.0,
+            "expN": 0.5,
+            "adjustThrust": 1,
+            "targetThrust": 347.0897,
+        },
+        "disk3": {
+            "type": "actuatorDisk",
+            "source": "cylinderAnnulusSmooth",
+            "center": [2.3067, 2.2586, 2.4808],
+            "direction": [1.0, 0.0, 0.0],
+            "innerRadius": 0.22158,
+            "outerRadius": 1.1079,
+            "rotDir": "left",
+            "scale": 1.0,
+            "POD": 2.74,
+            "eps": 0.15,
+            "expM": 1.0,
+            "expN": 0.5,
+            "adjustThrust": 1,
+            "targetThrust": 347.0897,
+        },
+    },
     "objFunc": {
         "CD": {
             "part1": {
@@ -146,6 +146,7 @@ daOptions = {
         "shape": {"designVarType": "FFD"},
         # "actuator_disk1": {"designVarType": "ACTD", "actuatorName": "disk1"},
         # "actuator_disk2": {"designVarType": "ACTD", "actuatorName": "disk2"},
+        # "actuator_disk2": {"designVarType": "ACTD", "actuatorName": "disk3"},
     },
     "checkMeshThreshold": {
         "maxNonOrth": 90.0,
@@ -234,7 +235,7 @@ class Top(Multipoint):
         self.add_design_var("shape", lower=-1.0, upper=1.0, scaler=10.0)
 
         # Define Constraints
-        self.add_constraint("cruise.aero_post.CL", equals=0.67, scaler=10.0)
+        self.add_constraint("cruise.aero_post.CL", equals=CL_target, scaler=10.0)
         self.add_constraint("geometry.thickcon", lower=0.5, upper=3.0, scaler=1.0)
         self.add_constraint("geometry.volcon", lower=1.0, upper=3.0, scaler=1.0)
         self.add_constraint("geometry.tecon", equals=0.0, scaler=1.0, linear=True)
@@ -254,9 +255,9 @@ prob.model = Top()
 prob.driver = om.pyOptSparseDriver()
 prob.driver.options["optimizer"] = "SNOPT"
 prob.driver.opt_settings = {
-    "Major feasibility tolerance": 1.0e-4,
-    "Major optimality tolerance": 1.0e-4,
-    "Minor feasibility tolerance": 1.0e-4,
+    "Major feasibility tolerance": 1.0e-5,
+    "Major optimality tolerance": 1.0e-5,
+    "Minor feasibility tolerance": 1.0e-5,
     "Verify level": -1,
     "Function precision": 1.0e-8,
     "Major iterations limit": 500,
