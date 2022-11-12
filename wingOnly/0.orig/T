@@ -21,7 +21,7 @@ internalField   uniform 268.35;
 
 boundaryField
 {
-    wing
+    "wing_.*"
     {
         type            zeroGradient;
     }

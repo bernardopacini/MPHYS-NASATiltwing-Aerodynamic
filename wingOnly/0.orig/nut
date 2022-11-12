@@ -17,11 +17,11 @@ FoamFile
 
 dimensions      [0 2 -1 0 0 0 0];
 
-internalField   uniform 4.5E-5;
+internalField   uniform 5.6E-5;
 
 boundaryField
 {
-    wing
+    "wing_.*"
     {
         type            nutUSpaldingWallFunction;
         value           $internalField;

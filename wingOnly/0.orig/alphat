@@ -21,7 +21,7 @@ internalField   uniform 1e-4;
 
 boundaryField
 {
-    wing
+    "wing_.*"
     {
         type            compressible::alphatWallFunction;
         value           $internalField;

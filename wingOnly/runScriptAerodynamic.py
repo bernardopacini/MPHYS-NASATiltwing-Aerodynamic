@@ -28,7 +28,7 @@ parentFFD = "./FFD/parentFFD.xyz"
 # =============================================================================
 U0 = 79.74
 p0 = 69692.1456
-nuTilda0 = 4.5e-5
+nuTilda0 = 5.6e-5
 T0 = 268.35
 alpha0 = 0.0
 A0 = 5.7915
@@ -37,7 +37,7 @@ rho0 = p0/287.0/T0
 CL_target = 0.67
 
 daOptions = {
-    "designSurfaces": ["wing"],
+    "designSurfaces": ["wing_tip", "wing_te", "wing_top", "wing_bot"],
     "solverName": "DARhoSimpleFoam",
     "primalMinResTol": 1.0e-9,
     "primalMinResTolDiff": 1.0e4,
@@ -115,7 +115,7 @@ daOptions = {
             "part1": {
                 "type": "force",
                 "source": "patchToFace",
-                "patches": ["wing"],
+                "patches": ["wing_tip", "wing_te", "wing_top", "wing_bot"],
                 "directionMode": "fixedDirection",
                 "direction": [1.0, 0.0, 0.0],
                 "scale": 1.0 / (0.5 * rho0 * U0 * U0 * A0),
@@ -126,7 +126,7 @@ daOptions = {
             "part1": {
                 "type": "force",
                 "source": "patchToFace",
-                "patches": ["wing"],
+                "patches": ["wing_tip", "wing_te", "wing_top", "wing_bot"],
                 "directionMode": "fixedDirection",
                 "direction": [0.0, 0.0, 1.0],
                 "scale": 1.0 / (0.5 * rho0 * U0 * U0 * A0),
@@ -223,6 +223,7 @@ class Top(Multipoint):
         self.geometry.nom_addVolumeConstraint("volcon", leList, teList, nSpan=16, nChord=20)
         self.geometry.nom_add_LETEConstraint("lecon", 0, "iLow", childIdx=0)
         self.geometry.nom_add_LETEConstraint("tecon", 0, "iHigh", childIdx=0)
+        self.geometry.nom_addLERadiusConstraints("radcon", leList, nSpan=10, axis=[0, 0, 1], chordDir=[-1, 0, 0])
 
         # Add and Connect DVs on the Indepent Variable Component
         self.dvs.add_output("twist", val=np.array([alpha0] * (nRefAxPts)))
@@ -240,6 +241,7 @@ class Top(Multipoint):
         self.add_constraint("geometry.volcon", lower=1.0, upper=3.0, scaler=1.0)
         self.add_constraint("geometry.tecon", equals=0.0, scaler=1.0, linear=True)
         self.add_constraint("geometry.lecon", equals=0.0, scaler=1.0, linear=True)
+        self.add_constraint("geometry.radcon", lower=1.0, upper=3.0, scaler=1.0)
 
         # Define Objective
         self.add_objective("cruise.aero_post.CD", scaler=100.0)

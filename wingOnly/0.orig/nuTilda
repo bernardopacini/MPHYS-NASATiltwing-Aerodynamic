@@ -17,11 +17,11 @@ FoamFile
 
 dimensions      [0 2 -1 0 0 0 0];
 
-internalField   uniform 4.5e-05;
+internalField   uniform 5.6e-05;
 
 boundaryField
 {
-    wing
+    "wing_.*"
     {
         type            fixedValue;
         value           uniform 0.0;

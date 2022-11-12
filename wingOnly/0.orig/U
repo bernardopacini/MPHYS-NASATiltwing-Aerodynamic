@@ -21,7 +21,7 @@ internalField uniform (79.74 0 0);
 
 boundaryField
 {
-    wing
+    "wing_.*"
     {
         type            fixedValue;
         
