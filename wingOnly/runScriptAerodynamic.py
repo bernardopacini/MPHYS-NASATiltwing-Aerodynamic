@@ -8,6 +8,8 @@ from dafoam.mphys import DAFoamBuilder, OptFuncs
 from mphys.scenario_aerodynamic import ScenarioAerodynamic
 from pygeo.mphys import OM_DVGEOCOMP
 
+import setupRotors
+
 # =============================================================================
 # Setup Parser
 # =============================================================================
@@ -28,6 +30,8 @@ A0 = 5.7915
 rho0 = p0 / 287.0 / T0
 
 CL_target = 0.67
+
+fvSourceDict = setupRotors.fvSourceDict(nRotors=5)
 
 daOptions = {
     "designSurfaces": ["wing_tip", "wing_te", "wing_top", "wing_bot"],
@@ -53,56 +57,7 @@ daOptions = {
         "rhoMax": 5.0,
         "rhoMin": 0.2,
     },
-    "fvSource": {
-        "disk1": {
-            "type": "actuatorDisk",
-            "source": "cylinderAnnulusSmooth",
-            "center": [3.1364, 6.6626, 2.5908],
-            "direction": [1.0, 0.0, 0.0],
-            "innerRadius": 0.22158,
-            "outerRadius": 1.1079,
-            "rotDir": "left",
-            "scale": 1.0,
-            "POD": 2.74,
-            "eps": 0.15,
-            "expM": 1.0,
-            "expN": 0.5,
-            "adjustThrust": 1,
-            "targetThrust": 347.0897,
-        },
-        "disk2": {
-            "type": "actuatorDisk",
-            "source": "cylinderAnnulusSmooth",
-            "center": [2.7209, 4.4574, 2.4808],
-            "direction": [1.0, 0.0, 0.0],
-            "innerRadius": 0.22158,
-            "outerRadius": 1.1079,
-            "rotDir": "left",
-            "scale": 1.0,
-            "POD": 2.74,
-            "eps": 0.15,
-            "expM": 1.0,
-            "expN": 0.5,
-            "adjustThrust": 1,
-            "targetThrust": 347.0897,
-        },
-        "disk3": {
-            "type": "actuatorDisk",
-            "source": "cylinderAnnulusSmooth",
-            "center": [2.3067, 2.2586, 2.4808],
-            "direction": [1.0, 0.0, 0.0],
-            "innerRadius": 0.22158,
-            "outerRadius": 1.1079,
-            "rotDir": "left",
-            "scale": 1.0,
-            "POD": 2.74,
-            "eps": 0.15,
-            "expM": 1.0,
-            "expN": 0.5,
-            "adjustThrust": 1,
-            "targetThrust": 347.0897,
-        },
-    },
+    "fvSource": fvSourceDict,
     "objFunc": {
         "CD": {
             "part1": {
