@@ -15,14 +15,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--task", help="type of run to do", type=str, default="opt")
 args = parser.parse_args()
 
-if args.task == "runPrimal":
-    useColoring = False
-else:
-    useColoring = True
-
-# TEMPORARY PYGEO
-childFFD = "./FFD/childFFD.xyz"
-parentFFD = "./FFD/parentFFD.xyz"
+wingFFD = "./FFD/wingFFD.xyz"
 # =============================================================================
 # Flight Condition
 # =============================================================================
@@ -30,9 +23,9 @@ U0 = 79.74
 p0 = 69692.1456
 nuTilda0 = 5.6e-5
 T0 = 268.35
-alpha0 = 0.0
+alpha0 = 0.0  # 2.3048533011109873 for CL = 0.67
 A0 = 5.7915
-rho0 = p0/287.0/T0
+rho0 = p0 / 287.0 / T0
 
 CL_target = 0.67
 
@@ -135,24 +128,27 @@ daOptions = {
         },
     },
     "useAD": {"mode": "reverse"},
-    "adjUseColoring": useColoring,
     "adjStateOrdering": "cell",
-    "adjEqnOption": {"gmresRelTol": 1.0e-10, "pcFillLevel": 1, "jacMatReOrdering": "natural", "gmresMaxIters": 5000, "gmresRestart": 2000},
+    "adjEqnOption": {
+        "gmresRelTol": 1.0e-10,
+        "pcFillLevel": 1,
+        "jacMatReOrdering": "natural",
+        "gmresMaxIters": 5000,
+        "gmresRestart": 2000,
+    },
     "normalizeStates": {"U": U0, "p": p0, "nuTilda": nuTilda0 * 10.0, "phi": 1.0, "T": T0},
     "adjPartDerivFDStep": {"State": 1e-6, "FFD": 1e-3},
     "adjPCLag": 100,
     "designVar": {
         "twist": {"designVarType": "FFD"},
         "shape": {"designVarType": "FFD"},
-        # "actuator_disk1": {"designVarType": "ACTD", "actuatorName": "disk1"},
-        # "actuator_disk2": {"designVarType": "ACTD", "actuatorName": "disk2"},
-        # "actuator_disk2": {"designVarType": "ACTD", "actuatorName": "disk3"},
     },
     "checkMeshThreshold": {
         "maxNonOrth": 90.0,
         "maxSkewness": 11.0,
     },
 }
+
 
 class Top(Multipoint):
     def setup(self):
@@ -180,7 +176,7 @@ class Top(Multipoint):
         self.add_subsystem("mesh", dafoam_builder.get_mesh_coordinate_subsystem())
 
         # Add Geometry Component
-        self.add_subsystem("geometry", OM_DVGEOCOMP(file=parentFFD, type="ffd"))
+        self.add_subsystem("geometry", OM_DVGEOCOMP(file=wingFFD, type="ffd"))
 
         # Add Scenario
         self.mphys_add_scenario("cruise", ScenarioAerodynamic(aero_builder=dafoam_builder))
@@ -204,8 +200,7 @@ class Top(Multipoint):
         self.geometry.nom_setConstraintSurface(tri_points)
 
         # Create Reference Axis
-        self.geometry.nom_addChild(ffd_file=childFFD)
-        nRefAxPts = self.geometry.nom_addRefAxis(name="wingAxis", xFraction=0.25, alignIndex="j", childIdx=0)
+        nRefAxPts = self.geometry.nom_addRefAxis(name="wingAxis", xFraction=0.25, alignIndex="j")
 
         # Define Twist Design Variable
         def twist(val, geo):
@@ -213,16 +208,16 @@ class Top(Multipoint):
                 geo.rot_y["wingAxis"].coef[i] = val[i]
 
         # Add DVs
-        self.geometry.nom_addGlobalDV(dvName="twist", value=np.array([0] * (nRefAxPts)), func=twist, childIdx=0)
-        nShapes = self.geometry.nom_addLocalDV(dvName="shape", axis="z", childIdx=0)
-        
+        self.geometry.nom_addGlobalDV(dvName="twist", value=np.array([0] * (nRefAxPts)), func=twist)
+        nShapes = self.geometry.nom_addLocalDV(dvName="shape", axis="z")
+
         # Set up constraints
         leList = [[2.72, 0.01, 2.59], [3.96, 6.61, 2.59]]
         teList = [[3.71, 0.01, 2.59], [4.65, 6.61, 2.59]]
         self.geometry.nom_addThicknessConstraints2D("thickcon", leList, teList, nSpan=16, nChord=20)
         self.geometry.nom_addVolumeConstraint("volcon", leList, teList, nSpan=16, nChord=20)
-        self.geometry.nom_add_LETEConstraint("lecon", 0, "iLow", childIdx=0)
-        self.geometry.nom_add_LETEConstraint("tecon", 0, "iHigh", childIdx=0)
+        self.geometry.nom_add_LETEConstraint("lecon", 0, "iLow")
+        self.geometry.nom_add_LETEConstraint("tecon", 0, "iHigh")
         self.geometry.nom_addLERadiusConstraints("radcon", leList, nSpan=10, axis=[0, 0, 1], chordDir=[-1, 0, 0])
 
         # Add and Connect DVs on the Indepent Variable Component
@@ -268,17 +263,31 @@ prob.driver.opt_settings = {
     "Summary file": "opt_SNOPT_summary.txt",
 }
 prob.driver.options["debug_print"] = ["nl_cons", "desvars", "objs"]
+prob.driver.options["print_opt_prob"] = True
+prob.driver.hist_file = "OptHist.hst"
+
+# Define Recorder
+prob.driver.recording_options["includes"] = []
+prob.driver.recording_options["record_desvars"] = True
+prob.driver.recording_options["record_objectives"] = True
+prob.driver.recording_options["record_constraints"] = True
+prob.driver.add_recorder(om.SqliteRecorder("OptHist.sql"))
 
 # Setup Problem
 prob.setup(mode="rev")
-om.n2(prob, show_browser=False, outfile="mphys_aero.html")
+om.n2(prob, show_browser=False, outfile="aero-opt-3.html")
 
 # ----------------------------- Run Optimization ---------------------------- #
-if args.task == "opt":
+if args.task == "run_driver":
+    # Find Feasible Design
+    optFuncs = OptFuncs([daOptions], prob)
+    optFuncs.findFeasibleDesign(["cruise.aero_post.CL"], ["twist"], targets=[CL_target])
+
+    # Run Driver
     prob.run_driver()
 
 # -------------------------------- Run Primal ------------------------------- #
-elif args.task == "runPrimal":
+elif args.task == "run_model":
     prob.run_model()
 
 # ------------------------------- Check Totals ------------------------------ #
