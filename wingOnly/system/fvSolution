@@ -50,7 +50,8 @@ relaxationFactors
 {
     fields
     {
-        "(rho|p|p_rgh)"                    0.30;
+        rho                            0.10;
+        "(p|p_rgh)"                    0.30;
     }
     equations
     {

@@ -36,7 +36,7 @@ fvSourceDict = setupRotors.fvSourceDict(nRotors=5)
 daOptions = {
     "designSurfaces": ["wing_tip", "wing_te", "wing_top", "wing_bot"],
     "solverName": "DARhoSimpleFoam",
-    "primalMinResTol": 1.0e-9,
+    "primalMinResTol": 1.0e-10,
     "primalMinResTolDiff": 1.0e4,
     "debug": False,
     "primalBC": {
