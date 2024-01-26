@@ -1,18 +1,23 @@
 NASA Tiltwing Vehicle - Aerodynamic Optimization
 ================================================
 
-This template provides a starting point for computational research projects.
-The aim of this template is to provide a standardized way of working on a project and documenting the work that makes it easily reproducible in the future.
-The data in this repository should include all the necessary files, properly configured, to run all of the cases presented in the work, for example to reproduce results in a paper.
-The documentation in this repository should provide guidance for every step of the work, from pre-processing, to solving, to post-processing.
+This repository holds the runscripts and files used for aerodynamic optimization of the NASA tiltwing concept vehicle's wing.
+The scripts contained in this repository can be used to recreate a study into distributed propulsion on an urban air mobility concept vehicle.
+This work was originally presented at the AIAA SciTech forum:
+
+```
+Bernardo Pacini, Malhar Prajapati, Karthikeyan Duraisamy, Joaquim R. Martins and Ping He. "Understanding Distributed Propulsion on the NASA Tiltwing Concept Vehicle with Aerodynamic Shape Optimization," AIAA 2023-0143. AIAA SCITECH 2023 Forum. January 2023.
+```
+
+Beware that the exact results presented in the paper may differ from results generated with newer versions of the tools used in the study.
+Checkout the paper, documentation, and runscripts for the exact details of the project as well as the necessary files to recreate the work.
 
 Documentation
 -------------
 
-The documentation for the project should be written using reStructuredText and the Sphinx package.
-This will make the documentation easy to visualize in either PDF or website form so that someone can easily open it and follow the steps in the work.
-
-To generate the documentation, ensure you have a working Python3 installation with `sphinx` and `sphinx-prompt` installed.
+Documentation for the mesh and geometry parameterization, as well as the runscripts, is included in the `/doc` directory.
+The documentation is written in `reStructuredText` and automatically uploaded to `ReadTheDocs`.
+To generate the documentation locally, ensure you have a working Python3 installation with `sphinx` and `sphinx-prompt` installed.
 Navigate to the `doc/` directory and execute:
 
 ```
@@ -20,67 +25,37 @@ make html
 open build/html/index.html
 ```
 
-When starting a new project with this template, be sure to adjust the Sphinx `conf.py` file and input the correct project details.
+Otherwise, checkout the [online documentation](https://mphys-nasatiltwing-aerodynamic.readthedocs.io/en/latest/).
 
-Repository Structure
---------------------
+Case Files
+-----------
 
-This part of the README should include a description of the repository structure, showing where each case is stored.
-For example, a structure diagram could be:
+To avoid bloading the repository, many files used in the optimizations are not tracked with Git.
+These include files such as the free-form deformation parameterization, the geometry objects, and the meshes.
+Some of these files are generated while pre-processing the case, while others can be downloaded directly from our storage drive.
 
-```
-project
-│   README.md
-│
-└───case1
-│   │   file1.txt
-│   │   file2.txt
-│   │
-│   └───subfolder1
-│       │   file11.txt
-│       │   file12.txt
-│       │   ...
-│
-└───case2
-│    │   file1.txt
-│    │   ...
-│
-└───doc
-│    │   index.rst
-│    │   ...
-```
-
-Adapt this diagram as needed to show how the repository is set up.
-
-Non-Git Files
--------------
-
-Some files are not git-trackable because they are in binary (non-text) form, because they are very large and would consume too much space, or because their raw data is meaningless and would produce unintelligible git diffs.
-Be sure to include these files in the `.gitignore` so that they are automatically not synchronized with the repository.
-To handle these files, store them somewhere else, such as Google Drive, and then include a bash stript for downloading the data.
-An example script is included in the `inputData/` directory called `getData.sh` (the script does not actually work, but has the commands needed for downloading data from Google Drive).
-Once the data is downloaded, it should either be automatically moved to the correct directory or remain in the `inputData/` folder and be properly referenced when required.
+To download the files, install the Python package `gdown`, navigate to the `inputData/` directory, and run the `getData.sh` script.
+This will download and unpack the required files needed for the cases.
 
 Dependencies
 ------------
 
-Each research project may have a unique set of dependencies.
-Include them here and note if they are necessary or not.
-The order is arbitrary, but if there is a convenient way of ordering them it can be helpful for users.
-For this template, we need only:
+These optimizations require a variety of dependencies that include fundamental tools such as GCC / GNU, MPI, and PETSc, as well as the MACH framework, developed at the University of Michigan.
+For infomration on how to install DAFoam and the required dependencies, checkout the [online installation guide](https://dafoam.github.io/mydoc_installation_source.html).
 
-* Python3
-* Sphinx
+DAFoam also ships as a Docker image.
+To avoid installing DAFoam and the associated environment from scratch, checkout the [pre-packaged image](https://dafoam.github.io/mydoc_get_started_download_docker.html).
 
 Contributors
 ------------
 
-List the contributors to the project here, starting with those who did the most work and decreasing through the list.
-
 * Bernardo Pacini
+* Malhar Prajapati
+* Karthik Duraisamy
+* Joaquim R R A Martins
+* Ping He
 
 Additional Notes
 ----------------
 
-* As the project is ongoing, there may be many added or removed files, bloating the repository's history.
-It may be worthwhile working on a `develop` branch and only committing the completed project to `master` once it has reached a mature state.
+* The optimizations run for this study were run on the Great Lakes Cluster within the Advanced Research Computing center at the University of Michigan. We recommend about 128 cores and 200GB of RAM to run the cases.
