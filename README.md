@@ -1,6 +1,8 @@
 NASA Tiltwing Vehicle - Aerodynamic Optimization
 ================================================
 
+[![Documentation Status](https://readthedocs.org/projects/mphys-nasatiltwing-aerodynamic/badge/?version=latest)](https://mphys-nasatiltwing-aerodynamic.readthedocs.io/en/latest/?badge=latest)
+
 This repository holds the runscripts and files used for aerodynamic optimization of the NASA tiltwing concept vehicle's wing.
 The scripts contained in this repository can be used to recreate a study into distributed propulsion on an urban air mobility concept vehicle.
 This work was originally presented at the AIAA SciTech forum:
