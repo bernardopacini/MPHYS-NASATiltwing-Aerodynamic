@@ -7,9 +7,7 @@ This repository holds the runscripts and files used for aerodynamic optimization
 The scripts contained in this repository can be used to recreate a study into distributed propulsion on an urban air mobility concept vehicle.
 This work was originally presented at the AIAA SciTech forum:
 
-```
-Bernardo Pacini, Malhar Prajapati, Karthikeyan Duraisamy, Joaquim R. Martins and Ping He. "Understanding Distributed Propulsion on the NASA Tiltwing Concept Vehicle with Aerodynamic Shape Optimization," AIAA 2023-0143. AIAA SCITECH 2023 Forum. January 2023.
-```
+```Bernardo Pacini, Malhar Prajapati, Karthikeyan Duraisamy, Joaquim R. Martins and Ping He. "Understanding Distributed Propulsion on the NASA Tiltwing Concept Vehicle with Aerodynamic Shape Optimization," AIAA 2023-0143. AIAA SCITECH 2023 Forum. January 2023.```
 
 Beware that the exact results presented in the paper may differ from results generated with newer versions of the tools used in the study.
 Checkout the paper, documentation, and runscripts for the exact details of the project as well as the necessary files to recreate the work.
@@ -42,8 +40,8 @@ This will download and unpack the required files needed for the cases.
 Dependencies
 ------------
 
-These optimizations require a variety of dependencies that include fundamental tools such as GCC / GNU, MPI, and PETSc, as well as the MACH framework, developed at the University of Michigan.
-For infomration on how to install DAFoam and the required dependencies, checkout the [online installation guide](https://dafoam.github.io/mydoc_installation_source.html).
+These optimizations require a variety of dependencies that include fundamental tools such as GCC / GNU, MPI, and PETSc, as well as the MACH optimization framework.
+For information on how to install DAFoam and the required dependencies, checkout the [online installation guide](https://dafoam.github.io/mydoc_installation_source.html).
 
 DAFoam also ships as a Docker image.
 To avoid installing DAFoam and the associated environment from scratch, checkout the [pre-packaged image](https://dafoam.github.io/mydoc_get_started_download_docker.html).

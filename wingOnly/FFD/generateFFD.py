@@ -1,7 +1,9 @@
+# rst imports
 import numpy as np
 import sys
 
 
+# rst write file
 def writeFFDFile(fileName, nBlocks, nx, ny, nz, points):
     """
     Take in a set of points and write the plot 3dFile
@@ -45,6 +47,7 @@ def writeFFDFile(fileName, nBlocks, nx, ny, nz, points):
     return
 
 
+# rst return block
 def returnBlockPoints(corners, nx, ny, nz):
     """
     corners needs to be 8 x 3
@@ -73,7 +76,8 @@ def returnBlockPoints(corners, nx, ny, nz):
     return points
 
 
-################ Child FFD ##############
+# rst define block
+################ FFD ##############
 nBlocks = 1
 
 nx = [10]
@@ -96,6 +100,7 @@ points = []
 for block in range(nBlocks):
     points.append(returnBlockPoints(corners[block], nx[block], ny[block], nz[block]))
 
+# rst write block
 # print points
 fileName = "wingFFD.xyz"
 writeFFDFile(fileName, nBlocks, nx, ny, nz, points)
