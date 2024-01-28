@@ -2,6 +2,7 @@ import numpy as np
 import pprint as pp
 
 
+# rst fvSourceDict
 def fvSourceDict(nRotors):
     R = 1.1079
 
@@ -65,7 +66,7 @@ def fvSourceDict(nRotors):
 
     return fvSource
 
-
+# rst setupRotors debug
 if __name__ == "__main__":
     for i in range(5):
         print("\nFVSource Dictionary, N = {}".format(i + 1))

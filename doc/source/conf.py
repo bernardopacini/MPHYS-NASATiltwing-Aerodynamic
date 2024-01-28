@@ -19,8 +19,8 @@ import os
 
 # -- Project information -----------------------------------------------------
 
-project = "Research Project Template"
-copyright = "2022, Bernardo Pacini"
+project = "NASA Tiltwing Vehicle - Aerodynamic Optimization"
+copyright = "2024, Bernardo Pacini"
 author = "Bernardo Pacini"
 
 # The full version, including alpha/beta/rc tags
@@ -34,6 +34,7 @@ author = "Bernardo Pacini"
 extensions = [
     "sphinx-prompt",
     "sphinxcontrib.bibtex",
+    "sphinx_subfigure",
 ]
 bibtex_bibfiles = ["refs.bib"]
 

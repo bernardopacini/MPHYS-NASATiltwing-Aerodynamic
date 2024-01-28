@@ -17,6 +17,7 @@ NASA Tiltwing Vehicle - Aerodynamic Optimization
    :maxdepth: 2
 
    solving/index
+   solving/propellerDefinition
 
 .. toctree::
    :caption: Post-Processing
