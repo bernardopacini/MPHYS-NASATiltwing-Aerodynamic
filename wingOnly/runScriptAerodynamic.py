@@ -1,3 +1,4 @@
+# rst imports
 import numpy as np
 import os
 import argparse
@@ -10,14 +11,15 @@ from pygeo.mphys import OM_DVGEOCOMP
 
 import setupRotors
 
+# rst parser
 # =============================================================================
 # Setup Parser
 # =============================================================================
 parser = argparse.ArgumentParser()
-parser.add_argument("--task", help="type of run to do", type=str, default="opt")
+parser.add_argument("--task", help="type of run to do", type=str, default="run_model")
 args = parser.parse_args()
 
-wingFFD = "./FFD/wingFFD.xyz"
+# rst flight condition
 # =============================================================================
 # Flight Condition
 # =============================================================================
@@ -33,6 +35,9 @@ CL_target = 0.67
 
 fvSourceDict = setupRotors.fvSourceDict(nRotors=5)
 
+wingFFD = "./FFD/wingFFD.xyz"
+
+# rst daOptions
 daOptions = {
     "designSurfaces": ["wing_tip", "wing_te", "wing_top", "wing_bot"],
     "solverName": "DARhoSimpleFoam",
@@ -105,7 +110,9 @@ daOptions = {
 }
 
 
+# rst class
 class Top(Multipoint):
+    # rst setup
     def setup(self):
         # =====================================================================
         # DAFoam Setup
@@ -140,6 +147,7 @@ class Top(Multipoint):
         self.connect("mesh.x_aero0", "geometry.x_aero_in")
         self.connect("geometry.x_aero0", "cruise.x_aero")
 
+    # rst configure
     def configure(self):
         # Add Functions to MPHYS
         self.cruise.aero_post.mphys_add_funcs()
@@ -197,6 +205,7 @@ class Top(Multipoint):
         self.add_objective("cruise.aero_post.CD", scaler=100.0)
 
 
+# rst problem setup
 # =============================================================================
 # OpenMDAO setup
 # =============================================================================
@@ -232,6 +241,7 @@ prob.driver.add_recorder(om.SqliteRecorder("OptHist.sql"))
 prob.setup(mode="rev")
 om.n2(prob, show_browser=False, outfile="aero-opt-3.html")
 
+# rst tasks
 # ----------------------------- Run Optimization ---------------------------- #
 if args.task == "run_driver":
     # Find Feasible Design

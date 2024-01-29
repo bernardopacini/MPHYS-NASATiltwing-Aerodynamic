@@ -18,9 +18,12 @@ NASA Tiltwing Vehicle - Aerodynamic Optimization
 
    solving/index
    solving/propellerDefinition
+   solving/optimizationRunscript
 
 .. toctree::
    :caption: Post-Processing
    :maxdepth: 2
 
    postProcessing/index
+   postProcessing/optimizationHistory
+   postProcessing/aerodynamicResults
